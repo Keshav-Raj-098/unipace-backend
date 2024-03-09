@@ -38,7 +38,6 @@ model startup {
   hrDesignation String?
   founder       founder[]
   jobs          job[]
-  // iitdStartup   Boolean   @default(false)
 }
 
 model job {
@@ -88,8 +87,16 @@ model student {
   linkedIn    String?
   isVerified  Boolean              @default(true)
   resumeId    String?
+  college     String?
+  // college     college              @relation(fields: [collegeId], references: [id], onDelete: Cascade)
   jobsApplied studentApplication[]
 }
+
+// model college {
+//   id          String    @id @unique @default(uuid())
+//   name        String    @unique
+//   studentList student[]
+// }
 
 model admin {
   id       String @id @unique @default(uuid())
