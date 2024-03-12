@@ -137,14 +137,14 @@ router.put("/:startUpId", async (req, res) => {
         },
         update: {
           name: x.name,
-          email: x.email,
+          bio: x.bio,
           designation: x.designation,
           linkedIn: x.linkedIn,
         },
         create: {
           id: x.id,
           name: x.name,
-          email: x.email,
+          bio: x.bio,
           designation: x.designation,
           linkedIn: x.linkedIn,
           startup: {

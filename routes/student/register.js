@@ -1,4 +1,4 @@
-import express, { json } from "express"
+import express from "express"
 const router = express.Router()
 import { transport } from "../../packages/mailer/index.js";
 import {prisma} from "../../prisma/prisma.js";

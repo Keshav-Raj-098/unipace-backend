@@ -13,7 +13,6 @@ model founder {
   name      String?
   bio       String?
   linkedIn  String?
-  website   String?
   startupId String
   startup   startup @relation(fields: [startupId], references: [id], onDelete: Cascade)
 
