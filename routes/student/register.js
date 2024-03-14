@@ -96,9 +96,18 @@ router.post('/', async (req, res) => {
 const SCOPE = process.env.SCOPE_UPLOAD;   
 //PUT
 router.put('/:studentId',upload.single('resume'), async (req, res) => {
+    const updatedStudent=await prisma.student.update({where:{id:req.params.studentId},data:{course:req.body.course,department:req.body.department,year:req.body.year,cgpa:req.body.cgpa,linkedIn:req.body.linkedIn,isVerified:true}})
     try {
-        const updatedStudent=await prisma.student.update({where:{id:req.params.studentId},data:{course:req.body.course,department:req.body.department,year:req.body.year,cgpa:req.body.cgpa,linkedIn:req.body.linkedIn,isVerified:true}})
+        
         const file = req.file;
+        if (! req.file) return res.status(200).json({
+            status: 200,
+            studentDetails: updatedStudent,
+            message : "no resume provided"
+        })
+
+
+        console.log("_--------------------",req.file)
         const tempFilePath = path.join(__dirname, 'temp', `${req.params.studentId}.pdf`);
         fs.writeFileSync(tempFilePath, file.buffer);
         const fileMetadata = {
@@ -128,7 +137,7 @@ router.put('/:studentId',upload.single('resume'), async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.status(500).json({
+        return res.status(500).json({
             status: 500,
             message: err.message
         })
