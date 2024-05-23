@@ -1,7 +1,7 @@
 import express from "express"
 const router = express.Router()
 import { transport } from "../../packages/mailer/index.js";
-import {prisma} from "../../prisma/prisma.js";
+import { prisma } from "../../prisma/prisma.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -19,7 +19,7 @@ import apikeys from '../../creds.json' assert { type: 'json' };
 //Get
 router.get('/', async (req, res) => {
     try {
-        const student=await prisma.student.findMany()
+        const student = await prisma.student.findMany()
         res.status(200).json({
             status: 200,
             length: student.length,
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:studentId', async (req, res) => {
     try {
-        const studentDetails=await prisma.student.findUnique({where:{id:req.params.studentId}})
+        const studentDetails = await prisma.student.findUnique({ where: { id: req.params.studentId } })
         res.status(200).json({
             status: 200,
             studentDetails: studentDetails
@@ -53,10 +53,10 @@ router.get('/:studentId', async (req, res) => {
 //POST
 router.post('/', async (req, res) => {
     try {
-        const checkUserAlreadyExist=await prisma.student.findUnique({where:{email:req.body.email.toLowerCase()}})
+        const checkUserAlreadyExist = await prisma.student.findUnique({ where: { email: req.body.email.toLowerCase() } })
         if (checkUserAlreadyExist === null) {
             const otp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-            const newStudent=await prisma.student.create({data:{name:req.body.name,email:req.body.email.toLowerCase(),otp:otp,isVerified:true}})
+            const newStudent = await prisma.student.create({ data: { name: req.body.name, email: req.body.email.toLowerCase(), otp: otp, isVerified: true } })
             delete newStudent.otp
             res.status(200).json({
                 status: 200,
@@ -93,26 +93,39 @@ router.post('/', async (req, res) => {
 })
 
 
-const SCOPE = process.env.SCOPE_UPLOAD;   
+const SCOPE = process.env.SCOPE_UPLOAD;
 //PUT
-router.put('/:studentId',upload.single('resume'), async (req, res) => {
-    const updatedStudent=await prisma.student.update({where:{id:req.params.studentId},data:{course:req.body.course,department:req.body.department,year:req.body.year,cgpa:req.body.cgpa,linkedIn:req.body.linkedIn,isVerified:true}})
+router.put('/:studentId', upload.single('resume'), async (req, res) => {
+    const updatedStudent = await prisma.student.update(
+        {
+            where: { id: req.params.studentId },
+            data: {
+                course: req.body.course,
+                department: req.body.department,
+                year: req.body.year,
+                cgpa: req.body.cgpa,
+                linkedIn: req.body.linkedIn,
+                isVerified: true,
+                college: req.body.college
+            }
+        }
+    )
     try {
-        
+
         const file = req.file;
-        if (! req.file) return res.status(200).json({
+        if (!req.file) return res.status(200).json({
             status: 200,
             studentDetails: updatedStudent,
-            message : "no resume provided"
+            message: "no resume provided"
         })
 
 
-        console.log("_--------------------",req.file)
+        console.log("_--------------------", req.file)
         const tempFilePath = path.join(__dirname, 'temp', `${req.params.studentId}.pdf`);
         fs.writeFileSync(tempFilePath, file.buffer);
         const fileMetadata = {
-            name: req.params.studentId+'.pdf',
-            parents:[process.env.PARENT_CV]
+            name: req.params.studentId + '.pdf',
+            parents: [process.env.PARENT_CV]
         }
         const media = {
             mimeType: 'application/pdf',
@@ -128,7 +141,7 @@ router.put('/:studentId',upload.single('resume'), async (req, res) => {
             if (err) throw err;
             console.log('File deleted!');
         });
-        await prisma.student.update({where:{id:req.params.studentId},data:{resumeId:response.data.id}})
+        await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
         console.log('File Id:', response.data.id);
         res.status(200).json({
             status: 200,

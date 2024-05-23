@@ -47,8 +47,6 @@ router.get('/', async (req, res) => {
 //Get
 router.get('/:jobId', async (req, res) => {
     try {
-        // const idToSearch = new ObjectId(req.params.jobId);
-        // const job = await Jobs.findById(idToSearch);
         const job=await prisma.job.findUnique({where:{id:req.params.jobId}})
         res.status(200).json({
             status: 200,
@@ -66,8 +64,6 @@ router.get('/:jobId', async (req, res) => {
 //PUT
 router.put('/:jobId', async (req, res) => {
     try {
-        // const studentIdToSearch = new ObjectId(req.user._id);
-        // const student= await Student.findById(studentIdToSearch)
         const student=await prisma.student.findUnique({where:{id:req.body.studentId}})
         if(!student.course||!student.department||!student.year||!student.cgpa
             // ||!student.resumeId
@@ -78,34 +74,6 @@ router.put('/:jobId', async (req, res) => {
             })
         }
         else if(student.isVerified){
-            // const jobIdToSearch = new ObjectId(req.params.jobId);
-            // const updatedjob = await Jobs.findByIdAndUpdate(jobIdToSearch, {
-            //     $push: {
-            //         "studentsApplied": {
-            //             "studentId": req.user._id,
-            //             "name": req.body.name,
-            //             "email": req.body.email,
-            //             "course":req.body.course,
-            //             "department":req.body.department,
-            //             "year":req.body.year,
-            //             "cgpa":req.body.cgpa,
-            //             "resumeLink": req.body.resumeLink,
-            //             "linkedIn":req.body.linkedIn,
-            //             "whyShouldWeHireYou":req.body.whyShouldWeHireYou,
-            //             "status": req.body.status
-            //         }
-            //     }
-            // }, { 'new': true })
-    
-            
-            // const updatedStudent = await Student.findByIdAndUpdate(studentIdToSearch, {
-            //     $push: {
-            //         "jobsApplied": {
-            //             "jobId": req.params.jobId,
-            //             "status": req.body.status
-            //         }
-            //     }
-            // }, { 'new': true })
             await prisma.studentApplication.create({
                 data:{
                     jobId:req.params.jobId,
