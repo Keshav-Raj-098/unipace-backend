@@ -4,21 +4,21 @@ const uploadImage = async (req, res, next) => {
      
     const imgfilePath = req.files?.image[0]?.path;
 
-    if (!imgfilePath) {
-        console.log('Image not found');
-        return res.status(400).json({ error: 'Image not found' });
-    }
+    // if (!imgfilePath) {
+    //     console.log('Image not found');
+    //     return res.status(400).json({ error: 'Image not found' });
+    // }
 
     const imglink = await UploadOnSupabase(imgfilePath);
-    console.log("this is link",imglink);
+    // console.log("this is link",imglink);
     
 
 
 
-    if (!imglink) {
-        console.log('Error occurred while uploading image');
-        return res.status(500).json({ error: 'Image upload failed' });
-    }
+    // if (!imglink) {
+    //     console.log('Error occurred while uploading image');
+    //     return res.status(500).json({ error: 'Image upload failed' });
+    // }
 
     // Add the image link to the req object
     req.imglink = imglink;
