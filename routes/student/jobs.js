@@ -4,6 +4,9 @@ const router = express.Router()
 // import Student from '../../models/student/register.js';
 // import { ObjectId } from 'mongodb';
 import {prisma} from "../../prisma/prisma.js";
+
+
+
 //Get
 router.get('/', async (req, res) => {
     try {
@@ -43,6 +46,7 @@ router.get('/', async (req, res) => {
         })
     }
 })
+
 
 //Get
 router.get('/:jobId', async (req, res) => {

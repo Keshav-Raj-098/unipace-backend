@@ -4,6 +4,8 @@ import { transport } from "../../packages/mailer/index.js";
 import { prisma } from "../../prisma/prisma.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { upload } from "../../middleware/multer.middelware.js"
+import { uploadImage, uploadResume } from "../../middleware/profileImage.middleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // OTP
@@ -11,10 +13,10 @@ import otpGenerator from 'otp-generator';
 import multer from 'multer';
 import { google } from 'googleapis';
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 const drive = google.drive('v3');
 import fs from 'fs';
-import apikeys from '../../creds.json' assert { type: 'json' };
+import apikeys from '../../creds_prod.json' assert { type: 'json' };
 
 //Get
 router.get('/', async (req, res) => {
@@ -95,40 +97,62 @@ router.post('/', async (req, res) => {
 
 const SCOPE = process.env.SCOPE_UPLOAD;
 //PUT
-router.put('/:studentId', upload.single('resume'), async (req, res) => {
-    const updatedStudent = await prisma.student.update(
+router.put('/:studentId', upload.fields(
+    [
         {
-            where: { id: req.params.studentId },
-            data: {
-                course: req.body.course,
-                department: req.body.department,
-                year: req.body.year,
-                cgpa: req.body.cgpa,
-                linkedIn: req.body.linkedIn,
-                isVerified: true,
-                college: req.body.college
-            }
+            name: "image",
+            maxCount: 1
+
+        },
+        {
+            name: "resume",
+            maxCount: 1
+
         }
+    ]
+),
+    uploadImage,  async (req, res) => {
+        const updatedStudent = await prisma.student.update(
+            {
+                where: { id: req.params.studentId },
+                data: {
+                    course: req.body.course,
+                    department: req.body.department,
+                    year: req.body.year,
+                    cgpa: req.body.cgpa,
+                    linkedIn: req.body.linkedIn,
+                    isVerified: true,
+                    college: req.body.college,
+                    imglink: req.imglink || null,
+                    // uploadResume middleware not working giving error RLS policy .... 
+                    // resumeLink: req.resumelink
+                }
+            }
+        )
+
+        if(!updatedStudent){
+            res.status(500).json({message:"Can,t update"})
+        }
+<<<<<<< HEAD
     )
     try {
 
         await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
         console.log('File Id:', response.data.id);
         res.status(200).json({
+=======
+        return   res.status(200).json({
+>>>>>>> 9c4f9d4f15cc8e5773d621e66404f0a0fe41b746
             status: 200,
             studentDetails: updatedStudent
         })
-    }
-    catch (err) {
-        console.log(err)
-        return res.status(500).json({
-            status: 500,
-            message: err.message
-        })
-    }
-})
+
+        
+
+    })
 
 export default router
+
 async function authorize() {
     try {
         const jwtClient = new google.auth.JWT(
@@ -150,3 +174,4 @@ async function authorize() {
         throw error; // Rethrow the error to be caught in the calling function
     }
 }
+
