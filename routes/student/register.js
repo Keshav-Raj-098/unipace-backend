@@ -135,10 +135,11 @@ router.put('/:studentId', upload.fields(
             message: err.message
         }) }
 
-        return res.status(200).json({
+        res.status(200).json({
             status: 200,
-            message: "Successfull"
-        }) 
+            studentDetails: updatedStudent
+        })
+
     })
 
 export default router
