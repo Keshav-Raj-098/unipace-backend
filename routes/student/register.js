@@ -123,7 +123,7 @@ router.put('/:studentId', upload.fields(
                     linkedIn: req.body.linkedIn,
                     isVerified: true,
                     college: req.body.college,
-                    imglink: req.imglink,
+                    imglink: req.imglink || null,
                     // uploadResume middleware not working giving error RLS policy .... 
                     // resumeLink: req.resumelink
                 }
@@ -143,6 +143,7 @@ router.put('/:studentId', upload.fields(
     })
 
 export default router
+
 async function authorize() {
     try {
         const jwtClient = new google.auth.JWT(
