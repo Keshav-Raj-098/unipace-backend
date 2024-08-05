@@ -129,21 +129,16 @@ router.put('/:studentId', upload.fields(
                 }
             }
         )
-        try {
-            await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
-            console.log('File Id:', response.data.id);
-            res.status(200).json({
-                status: 200,
-                studentDetails: updatedStudent
-            })
+
+        if(!updatedStudent){
+            res.status(500).json({message:"Can,t update"})
         }
-        catch (err) {
-            console.log(err)
-            return res.status(500).json({
-                status: 500,
-                message: err.message
-            })
-        }
+        return   res.status(200).json({
+            status: 200,
+            studentDetails: updatedStudent
+        })
+
+        
 
     })
 
