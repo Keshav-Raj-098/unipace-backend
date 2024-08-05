@@ -97,20 +97,20 @@ router.post('/', async (req, res) => {
 
 const SCOPE = process.env.SCOPE_UPLOAD;
 //PUT
-router.put('/:studentId', upload.fields(
-    [
-        {
-            name: "image",
-            maxCount: 1
+//use the following array when you are using uploadresume Function corresponding to this you also have to update the uploadImg middleware
+//  [
+//     {
+//         name: "image",
+//         maxCount: 1
 
-        },
-        {
-            name: "resume",
-            maxCount: 1
+//     },
+//     {
+//         name: "resume",
+//         maxCount: 1
 
-        }
-    ]
-),
+//     }
+// ]
+router.put('/:studentId', upload.single("image"),
     uploadImage,  async (req, res) => {
         const updatedStudent = await prisma.student.update(
             {
@@ -123,7 +123,7 @@ router.put('/:studentId', upload.fields(
                     linkedIn: req.body.linkedIn,
                     isVerified: true,
                     college: req.body.college,
-                    imglink: req.imglink || null,
+                    imglink: req.imglink,
                     // uploadResume middleware not working giving error RLS policy .... 
                     // resumeLink: req.resumelink
                 }
@@ -133,16 +133,7 @@ router.put('/:studentId', upload.fields(
         if(!updatedStudent){
             res.status(500).json({message:"Can,t update"})
         }
-<<<<<<< HEAD
-    )
-    try {
-
-        await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
-        console.log('File Id:', response.data.id);
-        res.status(200).json({
-=======
         return   res.status(200).json({
->>>>>>> 9c4f9d4f15cc8e5773d621e66404f0a0fe41b746
             status: 200,
             studentDetails: updatedStudent
         })

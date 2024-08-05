@@ -15,7 +15,6 @@ const UploadOnSupabase = async (filePath) => {
     const mimeType = mime.lookup(filePath) || 'application/octet-stream'; // Fallback MIME type
     const fileBuffer = fs.readFileSync(filePath);
     
-    console.log(mimeType)
 
     try {
         const { data, error } = await supabase.storage
