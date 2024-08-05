@@ -112,35 +112,6 @@ router.put('/:studentId', upload.single('resume'), async (req, res) => {
     )
     try {
 
-        const file = req.file;
-        if (!req.file) return res.status(200).json({
-            status: 200,
-            studentDetails: updatedStudent,
-            message: "no resume provided"
-        })
-
-
-        console.log("_--------------------", req.file)
-        const tempFilePath = path.join(__dirname, 'temp', `${req.params.studentId}.pdf`);
-        fs.writeFileSync(tempFilePath, file.buffer);
-        const fileMetadata = {
-            name: req.params.studentId + '.pdf',
-            parents: [process.env.PARENT_CV]
-        }
-        const media = {
-            mimeType: 'application/pdf',
-            body: fs.createReadStream(tempFilePath),
-        };
-        const jwtClient = await authorize();
-        const response = await drive.files.create({
-            auth: jwtClient,
-            resource: fileMetadata,
-            media: media
-        });
-        fs.unlink(tempFilePath, function (err) {
-            if (err) throw err;
-            console.log('File deleted!');
-        });
         await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
         console.log('File Id:', response.data.id);
         res.status(200).json({
