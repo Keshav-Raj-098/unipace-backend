@@ -76,13 +76,14 @@ model studentApplication {
 model student {
   id          String               @id @unique @default(uuid())
   name        String?
+  imglink     String?
   email       String               @unique
   otp         String?
   course      String?
   department  String?
   year        String?
   cgpa        String?
-  // resumeLink  String?
+  resumeLink  String?
   linkedIn    String?
   isVerified  Boolean              @default(true)
   resumeId    String?

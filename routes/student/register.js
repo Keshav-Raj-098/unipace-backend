@@ -4,6 +4,8 @@ import { transport } from "../../packages/mailer/index.js";
 import { prisma } from "../../prisma/prisma.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { upload } from "../../middleware/multer.middelware.js"
+import { uploadImage, uploadResume } from "../../middleware/profileImage.middleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // OTP
@@ -11,10 +13,10 @@ import otpGenerator from 'otp-generator';
 import multer from 'multer';
 import { google } from 'googleapis';
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 const drive = google.drive('v3');
 import fs from 'fs';
-import apikeys from '../../creds.json' assert { type: 'json' };
+import apikeys from '../../creds_prod.json' assert { type: 'json' };
 
 //Get
 router.get('/', async (req, res) => {
@@ -95,67 +97,49 @@ router.post('/', async (req, res) => {
 
 const SCOPE = process.env.SCOPE_UPLOAD;
 //PUT
-router.put('/:studentId', upload.single('resume'), async (req, res) => {
-    const updatedStudent = await prisma.student.update(
+router.put('/:studentId', upload.fields(
+    [
         {
-            where: { id: req.params.studentId },
-            data: {
-                course: req.body.course,
-                department: req.body.department,
-                year: req.body.year,
-                cgpa: req.body.cgpa,
-                linkedIn: req.body.linkedIn,
-                isVerified: true,
-                college: req.body.college
+            name: "image",
+            maxCount: 1
+
+        },
+        {
+            name: "resume",
+            maxCount: 1
+
+        }
+    ]
+),
+    uploadImage,  async (req, res) => {
+        const updatedStudent = await prisma.student.update(
+            {
+                where: { id: req.params.studentId },
+                data: {
+                    course: req.body.course,
+                    department: req.body.department,
+                    year: req.body.year,
+                    cgpa: req.body.cgpa,
+                    linkedIn: req.body.linkedIn,
+                    isVerified: true,
+                    college: req.body.college,
+                    imglink: req.imglink,
+                    // uploadResume middleware not working giving error RLS policy .... 
+                    // resumeLink: req.resumelink
+                }
             }
-        }
-    )
-    try {
-
-        const file = req.file;
-        if (!req.file) return res.status(200).json({
-            status: 200,
-            studentDetails: updatedStudent,
-            message: "no resume provided"
-        })
-
-
-        console.log("_--------------------", req.file)
-        const tempFilePath = path.join(__dirname, 'temp', `${req.params.studentId}.pdf`);
-        fs.writeFileSync(tempFilePath, file.buffer);
-        const fileMetadata = {
-            name: req.params.studentId + '.pdf',
-            parents: [process.env.PARENT_CV]
-        }
-        const media = {
-            mimeType: 'application/pdf',
-            body: fs.createReadStream(tempFilePath),
-        };
-        const jwtClient = await authorize();
-        const response = await drive.files.create({
-            auth: jwtClient,
-            resource: fileMetadata,
-            media: media
-        });
-        fs.unlink(tempFilePath, function (err) {
-            if (err) throw err;
-            console.log('File deleted!');
-        });
-        await prisma.student.update({ where: { id: req.params.studentId }, data: { resumeId: response.data.id } })
-        console.log('File Id:', response.data.id);
-        res.status(200).json({
-            status: 200,
-            studentDetails: updatedStudent
-        })
-    }
-    catch (err) {
-        console.log(err)
+        )
+      if(!updatedStudent){
         return res.status(500).json({
             status: 500,
             message: err.message
-        })
-    }
-})
+        }) }
+
+        return res.status(200).json({
+            status: 200,
+            message: "Successfull"
+        }) 
+    })
 
 export default router
 async function authorize() {
@@ -179,3 +163,4 @@ async function authorize() {
         throw error; // Rethrow the error to be caught in the calling function
     }
 }
+
