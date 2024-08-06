@@ -110,37 +110,39 @@ const SCOPE = process.env.SCOPE_UPLOAD;
 
 //     }
 // ]
-router.put('/:studentId', upload.single("image"),uploadImage,  async (req, res) => {
-        const updatedStudent = await prisma.student.update(
-            {
-                
-                where: { id: req.params.studentId },
-                data: {
-                    course: req.body.course,
-                    department: req.body.department,
-                    year: req.body.year,
-                    cgpa: req.body.cgpa,
-                    linkedIn: req.body.linkedIn,
-                    isVerified: true,
-                    college: req.body.college,
-                    imglink: req.imglink.error ? null:  req.imglink ,
-                    // uploadResume middleware not working giving error RLS policy .... 
-                    // resumeLink: req.resumelink
-                }
+router.put('/:studentId', upload.single("image"), uploadImage,async (req, res) => {
+    try {
+        const updatedStudent = await prisma.student.update({
+            where: { id: req.params.studentId },
+            data: {
+                course: req.body.course,
+                department: req.body.department,
+                year: req.body.year,
+                cgpa: req.body.cgpa,
+                linkedIn: req.body.linkedIn,
+                isVerified: true,
+                college: req.body.college,
+                imglink: req.imglink.error ? null : req.imglink,
+                // resumeLink: req.resumelink ? req.resumelink : null, 
+                // Added null check for resumeLink
             }
-        )
+        });
 
-        if(!updatedStudent){
-            res.status(500).json({message:"Can,t update"})
+        if (!updatedStudent) {
+            return res.status(500).json({ message: "Can't update" });
         }
-        return   res.status(200).json({
+
+        return res.status(200).json({
             status: 200,
             studentDetails: updatedStudent
-        })
+        });
 
-        
+    } catch (error) {
+        console.error('Error updating student:', error);
+        return res.status(500).json({ message: "Internal Server Errorrr", error });
+    }
+});
 
-    })
 
 export default router
 
