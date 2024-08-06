@@ -110,10 +110,10 @@ const SCOPE = process.env.SCOPE_UPLOAD;
 
 //     }
 // ]
-router.put('/:studentId', upload.single("image"),
-    uploadImage,  async (req, res) => {
+router.put('/:studentId', upload.single("image"),uploadImage,  async (req, res) => {
         const updatedStudent = await prisma.student.update(
             {
+                
                 where: { id: req.params.studentId },
                 data: {
                     course: req.body.course,
@@ -123,7 +123,7 @@ router.put('/:studentId', upload.single("image"),
                     linkedIn: req.body.linkedIn,
                     isVerified: true,
                     college: req.body.college,
-                    imglink: req.imglink,
+                    imglink: req.imglink.error ? null:  req.imglink ,
                     // uploadResume middleware not working giving error RLS policy .... 
                     // resumeLink: req.resumelink
                 }
