@@ -15,10 +15,10 @@ const uploadImage = async (req, res, next) => {
 
 
 
-    // if (!imglink) {
-    //     console.log('Error occurred while uploading image');
-    //     return res.status(500).json({ error: 'Image upload failed' });
-    // }
+    if (!imglink) {
+        console.log('Error occurred while uploading image');
+        return res.status(500).json({ error: 'Image upload failed' });
+    }
 
     // Add the image link to the req object
     req.imglink = imglink;

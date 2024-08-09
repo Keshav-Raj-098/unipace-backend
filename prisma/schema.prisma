@@ -14,6 +14,7 @@ model founder {
   bio       String?
   linkedIn  String?
   startupId String
+  website   String?
   startup   startup @relation(fields: [startupId], references: [id], onDelete: Cascade)
 
   @@id([id, startupId])
