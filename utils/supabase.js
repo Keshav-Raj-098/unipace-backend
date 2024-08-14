@@ -16,7 +16,7 @@ const UploadOnSupabase = async (filePath) => {
     const fileBuffer = fs.readFileSync(filePath);
     
 
-    try {
+    // try {
         const { data, error } = await supabase.storage
             .from('Student DP') // Ensure this is your actual bucket name
             .upload(`public/${fileName}`, fileBuffer, {
@@ -39,18 +39,22 @@ const UploadOnSupabase = async (filePath) => {
             return null;
         }
         // console.log(link.data.publicUrl);
-        
 
-        return link.data.publicUrl;
-    } catch (error) {
-        console.error('Unexpected error:', error.message);
-        return null;
-    } finally {
-        // Clean up the file regardless of success or failure
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }
-    }
+        
+
+        return link.data.publicUrl;
+    // } catch (error) {
+    //     console.error('Unexpected error:', error.message);
+    //     return null;
+    // } finally {
+        // Clean up the file regardless of success or failure
+        // if (fs.existsSync(filePath)) {
+        //     fs.unlinkSync(filePath);
+        // }
+    // }
 };
 
 export default UploadOnSupabase;
