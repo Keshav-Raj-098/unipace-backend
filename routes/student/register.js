@@ -124,7 +124,7 @@ router.put('/:studentId', upload.single("image"), uploadImage,async (req, res) =
                 linkedIn: req.body.linkedIn,
                 isVerified: true,
                 college: req.body.college,
-                imglink: req.imglink.error ? null : req.imglink,
+                imglink: req.imglink,
                 // resumeLink: req.resumelink ? req.resumelink : null, 
                 // Added null check for resumeLink
             }

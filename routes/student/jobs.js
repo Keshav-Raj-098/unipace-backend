@@ -11,28 +11,30 @@ import {prisma} from "../../prisma/prisma.js";
 router.get('/', async (req, res) => {
     try {
         var jobs;
-        if (req.query.type === undefined) {
+        // if (req.query.type === undefined) {
             // jobs = await Jobs.find({$and : [{ isActive: "true"} , {approval : "approved"}]}).sort({"createdAt":-1,"deadline":1})
-            jobs=await prisma.job.findMany({where:{AND:[{approval:"approved"}]},orderBy:{createdAt:"desc",deadline:"asc"}})
-        }
-        else {
+            // jobs=await prisma.job.findMany({where:{AND:[{approval:"approved"}]},orderBy:{createdAt:"desc",deadline:"asc"}})
+        // }
+        // else {
             // jobs = await Jobs.find({ $and: [{ type: req.query.type }, {approval : "approved"}] }).sort({"createdAt":-1,"deadline":1})
             jobs = await prisma.job.findMany({
-                where: {
-                    AND: [
-                        { type: req.query.type },
-                        { approval: "approved" }
-                    ]
-                },
-                include:{
-                    studentsApplied:true
-                },
+                // where: {
+                //     AND: [
+                //         { type: req.query.type },
+                //         { approval: "approved" }
+                //     ]
+                // },
+                // include:{
+                //     studentsApplied:true
+                // },
                 orderBy: [
                     { createdAt: "desc" },
                     { deadline: "asc" }
                 ]
             });
-        }
+        // }
+        console.log(jobs);
+        
         res.status(200).json({
             status: 200,
             length: jobs.length,
