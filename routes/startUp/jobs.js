@@ -18,18 +18,21 @@ router.get('/',authenticationMiddleware, async (req, res) => {//check for all de
         // ]}).sort({"createdAt":-1,"deadline":1})
         const jobs = await prisma.job.findMany({
             where: {
-                startUpId: req.query.startUpId,
-                type: req.query.type
+                startupId: req.query.startUpId,
+                // type: req.query.type
             },
             orderBy: [
                 { createdAt: 'desc' },
                 { deadline: 'asc' }
             ]
         });
+        
+        
         res.status(200).json({
             status: 200,
             length: jobs.length,
             jobs: jobs
+            
         })
     }
     catch (err) {
@@ -46,6 +49,8 @@ router.get('/:jobId', async (req, res) => {
         // const idToSearch = new ObjectId(req.params.jobId);
         // const job = await Jobs.findById(idToSearch);
         const job=await prisma.job.findUnique({where:{id:req.params.jobId},include:{studentsApplied:{include:{student:true}}}})
+        console.log(job);
+        
         res.status(200).json({
             status: 200,
             jobDetails: job
@@ -81,31 +86,39 @@ router.post('/', async (req, res) => {
         // })
         // const newJob = await job.save()
         const startUp=await prisma.startup.findUnique({where:{id:req.body.startUpId}});
-        console.log(startUp)
-        if(!startUp||!startUp.sector||!startUp.noOfEmployees||!startUp.companyVision){
-            return res.status(400).json({
-                status:400,
-                message:"Please complete your profile first"
-            })
-        }
+        // console.log(startUp)
+        // if(!startUp||!startUp.sector||!startUp.noOfEmployees||!startUp.companyVision){
+        //     return res.status(400).json({
+        //         status:400,
+        //         message:"Please complete your profile first"
+        //     })
+        // }
         const newJob=await prisma.job.create({data:{
             companyName: req.body.companyName,
-            designation: req.body.designation,
+            title: req.body.title,
             type: req.body.type,
-            duration: req.body.duration,
-            stipend: req.body.stipend,
-            noOfOffers: req.body.noOfOffers,
-            skillsRequired: req.body.skillsRequired,
-            jobLocation: req.body.jobLocation,
+            // duration: req.body.duration,
+            salary: req.body.salary,
+            totalApplications: req.body.totalApplications,
+            totalRequired: req.body.totalRequired,
+            // skillsRequired: req.body.skills,
+            // jobLocation: req.body.jobLocation,
+            description:req.body.description,
+            perks:req.body.perks,
+            category:req.body.category,
+            addSkill:req.body.addSkill,
+            qualification:req.body.qualification,
             responsibilities: req.body.responsibilities,
             assignment: req.body.assignment,
             deadline:req.body.deadline,
             selectionProcess: req.body.selectionProcess,
-            startUpId: req.body.startUpId,
+            startupId: req.body.startupId,
             createdAt: req.body.createdAt,
+
             approval : "pending",
             startup:{connect:{id:req.body.startUpId}}
         }})
+        console.log(req.body);
         const startUpDetails=await prisma.startup.findUnique({where:{id:req.body.startUpId}})
         //Added job id in startUp list
         // const startUpDetails = await StartUp.findByIdAndUpdate(newJob.startUpId, {

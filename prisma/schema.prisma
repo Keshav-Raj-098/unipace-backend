@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL_POSTGRESQL")
-  directUrl = env("DIRECT_URL_POSTGRESQL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL_POSTGRESQL")
 }
 
 model founder {
@@ -41,25 +40,30 @@ model startup {
 }
 
 model job {
-  id               String               @id @unique @default(uuid())
-  companyName      String?
-  startupId        String
-  designation      String?
-  type             String?
-  duration         String?
-  stipend          String?
-  noOfOffers       String?
-  skillsRequired   String?
-  jobLocation      String?
-  responsibilities String?
-  assignment       String?
-  deadline         String?
-  selectionProcess String?
-  startUpId        String?
-  createdAt        String?
-  approval         String?
-  startup          startup              @relation(fields: [startupId], references: [id], onDelete: Cascade)
-  studentsApplied  studentApplication[]
+  id                String               @id @unique @default(uuid())
+  companyName       String?
+  title             String?
+  startupId         String
+  addSkill          Json
+  category          String
+  type              String?
+  description       String?
+  duration          String?
+  salary            String?
+  jobLocation       String?
+  deadline          String?
+  totalApplications String?
+  totalRequired     String?
+  createdAt         String?
+  approval          String?
+  skillsRequired    String[]
+  perks             String[]
+  qualification     String[]
+  responsibilities  String[]
+  selectionProcess  String[]
+  assignment        String[]
+  startup           startup              @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  studentsApplied   studentApplication[]
 }
 
 model studentApplication {
@@ -89,15 +93,8 @@ model student {
   isVerified  Boolean              @default(true)
   resumeId    String?
   college     String?
-  // college     college              @relation(fields: [collegeId], references: [id], onDelete: Cascade)
   jobsApplied studentApplication[]
 }
-
-// model college {
-//   id          String    @id @unique @default(uuid())
-//   name        String    @unique
-//   studentList student[]
-// }
 
 model admin {
   id       String @id @unique @default(uuid())

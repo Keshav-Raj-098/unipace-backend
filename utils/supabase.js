@@ -26,7 +26,7 @@ const UploadOnSupabase = async (filePath) => {
 
         if (error) {
             console.error('Upload error:', error.message);
-            return error;
+            return null;
         }
 
         // Generate public URL

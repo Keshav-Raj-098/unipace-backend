@@ -1,27 +1,30 @@
 import UploadOnSupabase from "../utils/supabase.js";
 
 const uploadImage = async (req, res, next) => {
-     
     const imgfilePath = req.file?.path;
 
     if (!imgfilePath) {
         console.log('Image not found');
-        return res.status(400).json({ error: 'Image not found' });
+        // Optionally return a response if needed
+        // return res.status(400).json({ error: 'Image not found' });
+        req.imglink = null; // Set imglink to null if image file path is missing
+        return next();
     }
 
-    const imglink = await UploadOnSupabase(imgfilePath);
-    // console.log("this is link",imglink);
-    
+    try {
+        const imglink = await UploadOnSupabase(imgfilePath);
 
+        if (!imglink) {
+            console.log('Error occurred while uploading image');
+            req.imglink = null; // Set imglink to null if upload fails
+        } else {
+            req.imglink = imglink; // Set the image link if upload succeeds
+        }
 
-
-    if (!imglink) {
-        console.log('Error occurred while uploading image');
-        return res.status(500).json({ error: 'Image upload failed' });
+    } catch (error) {
+        console.error('Error during image upload:', error);
+        req.imglink = null; // Set imglink to null in case of an error
     }
-
-    // Add the image link to the req object
-    req.imglink = imglink;
 
     // Proceed to the next middleware or route handler
     next();
