@@ -22,7 +22,7 @@ app.use(express.json())
     
     import { authenticationMiddleware } from './middleware/auth.js'
     
-    app.use(authenticationMiddleware);
+   // app.use(authenticationMiddleware);
 
 
 // Student side auth api
