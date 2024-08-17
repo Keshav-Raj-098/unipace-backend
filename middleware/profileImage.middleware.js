@@ -1,18 +1,16 @@
 import UploadOnSupabase from "../utils/supabase.js";
 
-const uploadImage = async (req, res, next) => {
+const uploadImage = async (req, res, next, bucketName) => {
     const imgfilePath = req.file?.path;
 
     if (!imgfilePath) {
         console.log('Image not found');
-        // Optionally return a response if needed
-        // return res.status(400).json({ error: 'Image not found' });
         req.imglink = null; // Set imglink to null if image file path is missing
-        return next();
+        return next(); // Call next middleware or route handler
     }
 
     try {
-        const imglink = await UploadOnSupabase(imgfilePath);
+        const imglink = await UploadOnSupabase(imgfilePath, bucketName);
 
         if (!imglink) {
             console.log('Error occurred while uploading image');
@@ -20,15 +18,21 @@ const uploadImage = async (req, res, next) => {
         } else {
             req.imglink = imglink; // Set the image link if upload succeeds
         }
-
     } catch (error) {
         console.error('Error during image upload:', error);
         req.imglink = null; // Set imglink to null in case of an error
     }
 
-    // Proceed to the next middleware or route handler
-    next();
+    next(); // Call next middleware or route handler
 };
+
+
+
+const uploadImageMiddleware = (bucketName) => {
+    return (req, res, next) => {
+      uploadImage(req, res, next, bucketName);
+    };
+  };
 
 
 const uploadResume = async (req, res, next) => {
@@ -59,4 +63,4 @@ const uploadResume = async (req, res, next) => {
     // Proceed to the next middleware or route handler
     next();
 };
-export  {uploadImage,uploadResume}
+export  {uploadImage,uploadResume,uploadImageMiddleware}

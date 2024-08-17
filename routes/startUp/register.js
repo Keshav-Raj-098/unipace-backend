@@ -3,6 +3,8 @@ const router = express.Router();
 // import StartUp from '../../models/startUp/register.js';
 import { prisma } from "../../prisma/prisma.js";
 import { transport } from "../../packages/mailer/index.js";
+import { upload } from "../../middleware/multer.middelware.js"
+import { uploadImageMiddleware, uploadResume } from "../../middleware/profileImage.middleware.js";
 
 // OTP
 import otpGenerator from "otp-generator";
@@ -107,46 +109,63 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+
+
+
 //PUT
-router.put("/:startUpId", async (req, res) => {
+router.put("/:startUpId", upload.single("image"),uploadImageMiddleware("Startup DP"), async (req, res) => {
   try {
+
+    // Update the startup details in the database
     await prisma.startup.update({
       where: { id: req.params.startUpId },
       data: {
-        companyVision: req.body.companyVision,
-        noOfEmployees: req.body.noOfEmployees,
-        linkedIn: req.body.linkedIn,
+        // Profile image link (if applicable)
+        profileimglink: req.imglink,
+        foundedDate: req.body.founded,
         sector: req.body.sector,
+        location: req.body.location,
+        noOfEmployees: req.body.noOfEmployees,
+        aboutCompany: req.body.aboutCompany,
+        linkedIn: req.body.linkedIn,
+        website: req.body.website,
+        twitter: req.body.twitter,
+        instagram: req.body.instagram,
+        youtube: req.body.youtube,
+        facebook: req.body.facebook,
+        tracxn: req.body.tracxn,
+        cruchbase: req.body.cruchbase,
         hrName: req.body.hrName,
         hrEmail: req.body.hrEmail,
         hrDesignation: req.body.hrDesignation,
-        website: req.body.website,
-        tracxn: req.body.tracxn,
-        social: req.body.social,
-        cruchbase: req.body.cruchbase,
+        hrLinkedin: req.body.hrLinkedin,
       },
     });
-    for (let x of req.body.founder) {
-      // console.log(x)
+
+    const founders = JSON.parse(req.body.founder);
+
+    // Iterate over the founder array and upsert each founder
+    for (let founder of founders) {
       await prisma.founder.upsert({
         where: {
           id_startupId: {
-            id: x.id,
+            id:founder.id ,
             startupId: req.params.startUpId,
           },
         },
         update: {
-          name: x.name,
-          bio: x.bio,
-          designation: x.designation,
-          linkedIn: x.linkedIn,
+          name: founder.name,
+          bio: founder.bio,
+          designation: founder.designation,
+          linkedIn: founder.linkedIn,
         },
         create: {
-          id: x.id,
-          name: x.name,
-          bio: x.bio,
-          designation: x.designation,
-          linkedIn: x.linkedIn,
+          id:founder.id,
+          name: founder.name,
+          bio: founder.bio,
+          designation: founder.designation,
+          linkedIn: founder.linkedIn,
           startup: {
             connect: {
               id: req.params.startUpId,
@@ -155,10 +174,13 @@ router.put("/:startUpId", async (req, res) => {
         },
       });
     }
+
+    // Fetch and return the updated startup details
     const updatedStartUp = await prisma.startup.findUnique({
       where: { id: req.params.startUpId },
-      include: { founder: true },
+      include: { founder: true }, // Include founders if needed
     });
+
     res.status(200).json({
       status: 200,
       startUpDetails: updatedStartUp,
@@ -170,5 +192,6 @@ router.put("/:startUpId", async (req, res) => {
     });
   }
 });
+
 
 export default router;

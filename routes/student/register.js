@@ -5,7 +5,7 @@ import { prisma } from "../../prisma/prisma.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { upload } from "../../middleware/multer.middelware.js"
-import { uploadImage, uploadResume } from "../../middleware/profileImage.middleware.js";
+import { uploadImageMiddleware, uploadResume } from "../../middleware/profileImage.middleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // OTP
@@ -112,7 +112,7 @@ const SCOPE = process.env.SCOPE_UPLOAD;
 
 //     }
 // ]
-router.put('/:studentId', upload.single("image"), uploadImage,async (req, res) => {
+router.put('/:studentId', upload.single("image"),uploadImageMiddleware("Student DP"),async (req, res) => {
     try {
         const updatedStudent = await prisma.student.update({
             where: { id: req.params.studentId },

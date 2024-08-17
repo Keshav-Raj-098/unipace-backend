@@ -12,7 +12,10 @@ import otpGenerator from 'otp-generator';
 router.post('/', async (req, res) => {
     try {
         // const startUpDetails = await StartUp.findOne({ email: req.body.email })
+        
         const startUpDetails=await prisma.startup.findUnique({where:{email:req.body.email}})
+        console.log(startUpDetails);
+        
         if (startUpDetails === null) {
             res.status(401).json({
                 status: 401,

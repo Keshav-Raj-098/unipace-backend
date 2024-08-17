@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import mime from 'mime-types';
 
-const UploadOnSupabase = async (filePath) => {
+const UploadOnSupabase = async (filePath,bucketName) => {
     dotenv.config();
 
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -18,7 +18,7 @@ const UploadOnSupabase = async (filePath) => {
 
     try {
         const { data, error } = await supabase.storage
-            .from('Student DP') // Ensure this is your actual bucket name
+            .from(`${bucketName}`) // Ensure this is your actual bucket name
             .upload(`public/${fileName}`, fileBuffer, {
                 contentType: mimeType, // Specify MIME type
             });
@@ -31,7 +31,7 @@ const UploadOnSupabase = async (filePath) => {
 
         // Generate public URL
         const link =  supabase.storage
-            .from('Student DP')
+            .from(`${bucketName}`)
             .getPublicUrl(`public/${fileName}`);
 
         if (!link) {
@@ -44,7 +44,8 @@ const UploadOnSupabase = async (filePath) => {
     } catch (error) {
         console.error('Unexpected error:', error.message);
         return null;
-    } finally {
+    } 
+    finally {
         // Clean up the file regardless of success or failure
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);

@@ -8,7 +8,7 @@ datasource db {
 }
 
 model founder {
-  id        Int
+  id        Int   
   name      String?
   bio       String?
   linkedIn  String?
@@ -20,21 +20,29 @@ model founder {
 }
 
 model startup {
-  id            String    @id @unique @default(uuid())
-  companyName   String?
-  email         String    @unique
-  otp           String?
-  linkedIn      String?
-  website       String?
-  tracxn        String?
-  social        String?
-  cruchbase     String?
-  sector        String?
-  noOfEmployees String?
-  companyVision String?
+  id             String  @id @unique @default(uuid())
+  companyName    String?
+  email          String  @unique
+  otp            String?
+  profileimglink String?
+  foundedDate    String?
+  location       String?
+  aboutCompany   String?
+  sector         String?
+  noOfEmployees  String?
+  linkedIn       String?
+  website        String?
+  twitter        String?
+  instagram      String?
+  youtube        String?
+  facebook       String?
+  tracxn         String?
+  cruchbase      String?
+
   hrName        String?
   hrEmail       String?
   hrDesignation String?
+  hrLinkedin    String?
   founder       founder[]
   jobs          job[]
 }
