@@ -54,6 +54,8 @@ router.get('/', async (req, res) => {
 router.get('/:jobId', async (req, res) => {
     try {
         const job=await prisma.job.findUnique({where:{id:req.params.jobId}})
+        console.log(job);
+        
         res.status(200).json({
             status: 200,
             jobDetails: job

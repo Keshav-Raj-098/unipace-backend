@@ -233,5 +233,88 @@ router.put('/update/:jobId', async (req, res) => {
     }
 })
 
+// Get All applications
+//GET
+// Route to get students and job details by startupId
+router.get('/allApplication/:startupId', async (req, res) => {
+    const { startupId } = req.params;
+  
+    try {
+      // 1. Find all jobs associated with the startupId
+      const jobs = await prisma.job.findMany({
+        where: {
+          startupId: startupId,
+        },
+        select: {
+          id: true,
+          title: true,
+        },
+      });
+  
+      const jobIds = jobs.map(job => job.id);
+  
+      if (jobIds.length === 0) {
+        return res.status(404).json({ message: 'No jobs found for this startup' });
+      }
+  
+      // 2. Find all student applications associated with the jobIds
+      const applications = await prisma.studentApplication.findMany({
+        where: {
+          jobId: {
+            in: jobIds,
+          },
+        },
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              description: true, // Including additional job details if needed
+            },
+          },
+          student: true, // Include the student details
+        },
+      });
+  
+      if (applications.length === 0) {
+        return res.status(404).json({ message: 'No students found for these jobs' });
+      }
+  
+      // 3. Format the response to include job details, student information, and applied date
+      const response = applications.map(app => ({
+        student: app.student, // Full student schema
+        job: {
+          id: app.job.id,
+          title: app.job.title,
+          status: app.status, // Status of the application
+          applied: app.applied, // Add the applied date
+        },
+      }));
+  
+      // 4. Send the formatted response
+      res.status(200).json({
+        status: 200,
+        applicant: response,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while fetching students' });
+    }
+  });
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default router
