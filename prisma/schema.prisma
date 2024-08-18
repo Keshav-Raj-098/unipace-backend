@@ -8,7 +8,7 @@ datasource db {
 }
 
 model founder {
-  id        Int   
+  id        Int
   name      String?
   bio       String?
   linkedIn  String?
@@ -20,31 +20,30 @@ model founder {
 }
 
 model startup {
-  id             String  @id @unique @default(uuid())
+  id             String    @id @unique @default(uuid())
   companyName    String?
-  email          String  @unique
+  email          String    @unique
   otp            String?
-  profileimglink String?
-  foundedDate    String?
-  location       String?
-  aboutCompany   String?
-  sector         String?
-  noOfEmployees  String?
   linkedIn       String?
   website        String?
-  twitter        String?
-  instagram      String?
-  youtube        String?
-  facebook       String?
   tracxn         String?
   cruchbase      String?
-
-  hrName        String?
-  hrEmail       String?
-  hrDesignation String?
-  hrLinkedin    String?
-  founder       founder[]
-  jobs          job[]
+  sector         String?
+  noOfEmployees  String?
+  hrName         String?
+  hrEmail        String?
+  hrDesignation  String?
+  aboutCompany   String?
+  facebook       String?
+  foundedDate    String?
+  hrLinkedin     String?
+  instagram      String?
+  location       String?
+  profileimglink String?
+  twitter        String?
+  youtube        String?
+  founder        founder[]
+  jobs           job[]
 }
 
 model job {
@@ -70,6 +69,7 @@ model job {
   responsibilities  String[]
   selectionProcess  String[]
   assignment        String[]
+  photolink         String?
   startup           startup              @relation(fields: [startupId], references: [id], onDelete: Cascade)
   studentsApplied   studentApplication[]
 }

@@ -10,6 +10,7 @@ const secretKey = process.env.JWT_SECRET;
 const authenticationMiddleware = (req, res, next) => {
     // Check if the Authorization header is present in the request
   if (req.method === 'GET') return next()
+    
   const token = req.headers.authorization;
   if (!token) return res.status(401).json({ message: 'Unauthorized - No token provided' });
 

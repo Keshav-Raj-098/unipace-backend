@@ -24,9 +24,9 @@ router.get('/', async (req, res) => {
                 //         { approval: "approved" }
                 //     ]
                 // },
-                // include:{
-                //     studentsApplied:true
-                // },
+                include:{
+                    studentsApplied:true
+                },
                 orderBy: [
                     { createdAt: "desc" },
                     { deadline: "asc" }

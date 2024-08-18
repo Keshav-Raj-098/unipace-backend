@@ -22,27 +22,27 @@ app.use(express.json())
     
     import { authenticationMiddleware } from './middleware/auth.js'
     
+    
+    
+    // Student side auth api
+    import studentRegisterRouter from './routes/student/register.js'
+    app.use('/api/student/register', studentRegisterRouter)
+    
+    import studentLoginRouter from './routes/student/login.js'
+    app.use('/api/student/login', studentLoginRouter)
+    
+    // StartUp side auth api
+    
+    import startUpRegisterRouter from './routes/startUp/register.js'
+    app.use('/api/startUp/register', startUpRegisterRouter)
+    
+    import startUpLoginRouter from './routes/startUp/login.js'
+    app.use('/api/startUp/login', startUpLoginRouter);
+    
+    
     app.use(authenticationMiddleware);
-
-
-// Student side auth api
-import studentRegisterRouter from './routes/student/register.js'
-app.use('/api/student/register', studentRegisterRouter)
-
-import studentLoginRouter from './routes/student/login.js'
-app.use('/api/student/login', studentLoginRouter)
-
-// StartUp side auth api
-
-import startUpRegisterRouter from './routes/startUp/register.js'
-app.use('/api/startUp/register', startUpRegisterRouter)
-
-import startUpLoginRouter from './routes/startUp/login.js'
-app.use('/api/startUp/login', startUpLoginRouter);
-
-
-// Student side api
-
+    // Student side api
+    
 import studentJobsRouter from './routes/student/jobs.js'
 app.use('/api/student/jobs', studentJobsRouter);
 

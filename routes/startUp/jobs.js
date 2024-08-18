@@ -160,7 +160,6 @@ router.put('/:jobId', async (req, res) => {
         //     { $set: { "jobsApplied.$.status": req.body.status } },
         //     { 'new': true }
         // )
-        console.log(req.body);
         
         await prisma.studentApplication.update(
             {where:{jobId_studentId:{jobId:req.params.jobId,studentId:req.body.studentId}},
