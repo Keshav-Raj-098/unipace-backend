@@ -5,7 +5,7 @@ import { prisma } from "../../prisma/prisma.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { upload } from "../../middleware/multer.middelware.js"
-import { uploadImageMiddleware, uploadResume } from "../../middleware/profileImage.middleware.js";
+import { uploadImageMiddleware, uploadResumeMiddleware } from "../../middleware/profileImage.middleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // OTP
@@ -40,7 +40,7 @@ router.get('/:studentId', async (req, res) => {
     try {
         const studentDetails = await prisma.student.findUnique({ where: { id: req.params.studentId } })
         console.log(studentDetails);
-        
+
         res.status(200).json({
             status: 200,
             studentDetails: studentDetails
@@ -99,35 +99,39 @@ router.post('/', async (req, res) => {
 
 const SCOPE = process.env.SCOPE_UPLOAD;
 //PUT
-//use the following array when you are using uploadresume Function corresponding to this you also have to update the uploadImg middleware
-//  [
-//     {
-//         name: "image",
-//         maxCount: 1
-
-//     },
-//     {
-//         name: "resume",
-//         maxCount: 1
-
-//     }
-// ]
-router.put('/:studentId', upload.single("image"),uploadImageMiddleware("Student DP"),async (req, res) => {
+router.put('/:studentId', upload.fields([
+    {
+        name: "image",
+        maxCount: 1
+    },
+    {
+        name: "Resume",
+        maxCount: 1
+    }
+]), uploadResumeMiddleware("Resume"), uploadImageMiddleware("Student DP"), async (req, res) => {
     try {
+        const data = {
+            course: req.body.course,
+            department: req.body.department,
+            year: req.body.year,
+            cgpa: req.body.cgpa,
+            linkedIn: req.body.linkedIn,
+            isVerified: true,
+            college: req.body.college,
+        };
+
+        // Conditionally add imglink and resumeLink if they exist
+        if (req.imglink) {
+            data.imglink = req.imglink;
+        }
+
+        if (req.resumeLink) {
+            data.resumeLink = req.resumeLink;
+        }
+
         const updatedStudent = await prisma.student.update({
             where: { id: req.params.studentId },
-            data: {
-                course: req.body.course,
-                department: req.body.department,
-                year: req.body.year,
-                cgpa: req.body.cgpa,
-                linkedIn: req.body.linkedIn,
-                isVerified: true,
-                college: req.body.college,
-                imglink: req.imglink,
-                // resumeLink: req.resumelink ? req.resumelink : null, 
-                // Added null check for resumeLink
-            }
+            data: data,
         });
 
         if (!updatedStudent) {
@@ -141,7 +145,7 @@ router.put('/:studentId', upload.single("image"),uploadImageMiddleware("Student 
 
     } catch (error) {
         console.error('Error updating student:', error);
-        return res.status(500).json({ message: "Internal Server Errorrr", error });
+        return res.status(500).json({ message: "Internal Server Error", error });
     }
 });
 

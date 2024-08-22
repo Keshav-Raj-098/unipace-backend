@@ -21,6 +21,7 @@ const UploadOnSupabase = async (filePath,bucketName) => {
             .from(`${bucketName}`) // Ensure this is your actual bucket name
             .upload(`public/${fileName}`, fileBuffer, {
                 contentType: mimeType, // Specify MIME type
+                upsert:true,
             });
             
 

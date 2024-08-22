@@ -1,7 +1,7 @@
 import UploadOnSupabase from "../utils/supabase.js";
 
 const uploadImage = async (req, res, next, bucketName) => {
-    const imgfilePath = req.file?.path;
+    const imgfilePath =  req.files?.image?.[0]?.path;
 
     if (!imgfilePath) {
         console.log('Image not found');
@@ -35,32 +35,38 @@ const uploadImageMiddleware = (bucketName) => {
   };
 
 
-const uploadResume = async (req, res, next) => {
-     
-    const resumefilePath = req.files?.resume[0]?.path;
-    console.log(resumefilePath);
-    
+const uploadResume = async (req, res, next,bucketName) => {
+        
+    const resumePath = req.files?.Resume?.[0]?.path;
 
-    if (!resumefilePath) {
+    if (!resumePath) {
         console.log('Resume not found');
-        return res.status(400).json({ error: 'Resume not found' });
+        req.resumeLink = null; // Set imglink to null if image file path is missing
+        return next(); // Call next middleware or route handler
     }
 
-    const resumelink = await UploadOnSupabase(resumefilePath);
-    console.log("this is link",resumelink);
-    
+    try {
+        const resumeLink = await UploadOnSupabase(resumePath, bucketName);
 
-
-
-    if (!resumelink) {
-        console.log('Error occurred while uploading resume');
-        return res.status(500).json({ error: 'resume upload failed' });
+        if (!resumeLink) {
+            console.log('Error occurred while uploading Resume');
+            req.resumeLink = null; // Set imglink to null if upload fails
+        } else {
+            req.resumeLink = resumeLink; // Set the image link if upload succeeds
+        }
+    } catch (error) {
+        console.error('Error during Resume upload:', error);
+        req.resumeLink = null; // Set imglink to null in case of an error
     }
 
-    // Add the image link to the req object
-    req.resumelink = resumelink;
-
-    // Proceed to the next middleware or route handler
-    next();
+    next(); // Call next middleware or route handler
 };
-export  {uploadImage,uploadResume,uploadImageMiddleware}
+
+
+const uploadResumeMiddleware = (bucketName) => {
+    return (req, res, next) => {
+      uploadResume(req, res, next, bucketName);
+    };
+  };
+
+export  {uploadImage,uploadResume,uploadImageMiddleware,uploadResumeMiddleware}
