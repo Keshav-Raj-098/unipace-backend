@@ -12,6 +12,7 @@ const authenticationMiddleware = (req, res, next) => {
   if (req.method === 'GET') return next()
     
   const token = req.headers.authorization;
+  
   if (!token) return res.status(401).json({ message: 'Unauthorized - No token provided' });
 
   // Verify and decode the token
@@ -20,6 +21,8 @@ const authenticationMiddleware = (req, res, next) => {
       return res.status(401).json({ message: 'Unauthorized - Invalid token' });
     }
     req.user = decoded;
+
+    console.log(decoded);
 
     
     next();

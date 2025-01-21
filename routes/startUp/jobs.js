@@ -67,32 +67,6 @@ router.get('/:jobId', async (req, res) => {
 //POST
 router.post('/', async (req, res) => {
     try {
-        // const job = new Jobs({
-        //     companyName: req.body.companyName,
-        //     designation: req.body.designation,
-        //     type: req.body.type,
-        //     duration: req.body.duration,
-        //     stipend: req.body.stipend,
-        //     noOfOffers: req.body.noOfOffers,
-        //     skillsRequired: req.body.skillsRequired,
-        //     jobLocation: req.body.jobLocation,
-        //     responsibilities: req.body.responsibilities,
-        //     assignment: req.body.assignment,
-        //     deadline:req.body.deadline,
-        //     selectionProcess: req.body.selectionProcess,
-        //     startUpId: req.user._id,
-        //     createdAt: req.body.createdAt,
-        //     approval : "pending",
-        // })
-        // const newJob = await job.save()
-        const startUp=await prisma.startup.findUnique({where:{id:req.body.startUpId}});
-        // console.log(startUp)
-        // if(!startUp||!startUp.sector||!startUp.noOfEmployees||!startUp.companyVision){
-        //     return res.status(400).json({
-        //         status:400,
-        //         message:"Please complete your profile first"
-        //     })
-        // }
         const newJob=await prisma.job.create({data:{
             companyName: req.body.companyName,
             title: req.body.title,
@@ -101,8 +75,8 @@ router.post('/', async (req, res) => {
             salary: req.body.salary,
             totalApplications: req.body.totalApplications,
             totalRequired: req.body.totalRequired,
-            // skillsRequired: req.body.skills,
-            // jobLocation: req.body.jobLocation,
+            skillsRequired: req.body.skills,
+            jobLocation: req.body.jobLocation,
             description:req.body.description,
             perks:req.body.perks,
             category:req.body.category,
@@ -118,17 +92,9 @@ router.post('/', async (req, res) => {
             approval : "pending",
             startup:{connect:{id:req.body.startUpId}}
         }})
-        console.log(req.body);
+       
         const startUpDetails=await prisma.startup.findUnique({where:{id:req.body.startUpId}})
-        //Added job id in startUp list
-        // const startUpDetails = await StartUp.findByIdAndUpdate(newJob.startUpId, {
-        //     $push: {
-        //         "jobs": {
-        //             "jobId": newJob._id
-        //         }
-        //     }
-        // }, { 'new': true })
-        //I dont need to update here
+       
         res.status(201).json({
             status: 201,
             jobDetails: newJob,
