@@ -22,7 +22,9 @@ app.use(express.json())
     
     import { authenticationMiddleware } from './middleware/auth.js'
     
-    
+    app.get('/', (req, res) => {
+        res.send('Job Portal Backend')
+    })
     
     // Student side auth api
     import studentRegisterRouter from './routes/student/register.js'
@@ -40,16 +42,13 @@ app.use(express.json())
     app.use('/api/startUp/login', startUpLoginRouter);
     
     
-    app.use(authenticationMiddleware);
-    // Student side api
-    
 import studentJobsRouter from './routes/student/jobs.js'
-app.use('/api/student/jobs', studentJobsRouter);
+app.use('/api/student/jobs',authenticationMiddleware,studentJobsRouter);
 
 // StartUp side api
 
 import startUpJobsRouter from './routes/startUp/jobs.js'
-app.use('/api/startUp/jobs', startUpJobsRouter);
+app.use('/api/startUp/jobs',authenticationMiddleware,startUpJobsRouter);
 
 
 // Sending Client Files

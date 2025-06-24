@@ -92,6 +92,7 @@ router.post('/', async (req, res) => {
             approval : "pending",
             startup:{connect:{id:req.body.startUpId}}
         }})
+        
        
         const startUpDetails=await prisma.startup.findUnique({where:{id:req.body.startUpId}})
        
