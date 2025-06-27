@@ -13,4 +13,6 @@ COPY . .
 
 RUN npx prisma generate
  
+RUN npx prisma generate
+
 CMD [ "node", "index.js" ]
