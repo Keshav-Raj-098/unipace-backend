@@ -29,3 +29,21 @@ jobs:
         file: ./Dockerfile
         push: true
         tags:  keshavraj098/unipace-backend:latest
+  
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        envs: DOCKER_USER,DOCKER_PASS
+        script: |
+          export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
+          export DOCKER_PASS=${{ secrets.DOCKER_PASSWORD }}
+          cd /home/ubuntu/unipace
+          ./deploy.sh
