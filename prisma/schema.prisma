@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL_POSTGRESQL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model founder {
@@ -75,14 +76,14 @@ model job {
 }
 
 model studentApplication {
-  id                 String  @id @unique @default(uuid())
+  id                 String    @id @unique @default(uuid())
   studentId          String
   jobId              String
-  status             String  @default("Applied")
- applied             DateTime? @default(now())
+  status             String    @default("Applied")
+  applied            DateTime? @default(now())
   whyShouldWeHireYou String?
-  job                job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  student            student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job                job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student            student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([jobId, studentId])
 }
