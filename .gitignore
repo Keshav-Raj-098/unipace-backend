@@ -3,3 +3,4 @@ node_modules
 client
 creds.json
 test.js
+.github/*
