@@ -25,7 +25,7 @@ router.get('/',authenticationMiddleware, async (req, res) => {//check for all de
                 { createdAt: 'desc' },
                 { deadline: 'asc' }
             ]
-        });
+        }); 
         
         
         res.status(200).json({
